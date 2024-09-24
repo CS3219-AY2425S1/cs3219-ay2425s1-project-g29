@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  question_service:
+    container_name: question_service
+    image: question_service
+    build:
+      context: ./backend/question_service
+      dockerfile: Dockerfile
+    networks:
+      - backend_network
+    ports:
+      - "5000:5000"
+
+  frontend:
+    container_name: frontend
+    image: frontend
+    build:
+      context: ./frontend/Peerprep
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"  # Expose the frontend on port 3000 externally
+    networks:
+      - backend_network
+    depends_on:
+      - question_service
+
+networks:
+  backend_network:
+    driver: bridge
