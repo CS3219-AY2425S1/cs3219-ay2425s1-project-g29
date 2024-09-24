@@ -1,6 +1,5 @@
 <template>
     <main class="h-screen w-full flex flex-col overflow-hidden">
-        <Navbar v-if="showNavbar" />
         <div class="flex-grow overflow-y-auto">
             <slot />
         </div>
@@ -8,7 +7,6 @@
 </template>
 
 <script setup>
-import Navbar from '~/components/navigation/Navbar.vue';
 </script>
 
 <script>
