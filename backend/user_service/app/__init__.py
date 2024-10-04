@@ -8,11 +8,17 @@ def create_app():
     app = Flask(__name__)
     CORS(app)
     
-    # Initialize Firebase
-    from app.firebase import initialize_firebase
-    initialize_firebase()
-    
-    # Check if connection to Firebase is good
+    try:
+        # Initialize Firebase
+        from app.firebase import initialize_firebase
+        initialize_firebase()
+        
+        # Check if connection to Firebase is good
+        from firebase_admin import auth
+        auth.list_users().users
+    except Exception as e:
+        print("Failed to initialize Firebase:", str(e))
+        raise e
     
     # Register Blueprints
     from app.main import main as main_bp

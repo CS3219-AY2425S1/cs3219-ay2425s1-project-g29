@@ -7,7 +7,7 @@ definePageMeta({
 })
 
 const token = ref('');
-var actualToken = "";
+let actualToken = "";
 const isAdmin = ref('');
 const user = await getCurrentUser();
 const userDetails = ref('');
