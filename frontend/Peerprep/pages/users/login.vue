@@ -5,6 +5,10 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 
+definePageMeta({
+  requiresAuth: false,
+})
+
 const auth = useFirebaseAuth();
 const router = useRouter();
 

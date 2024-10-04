@@ -1,6 +1,10 @@
 <script setup>
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
+definePageMeta({
+  requiresAuth: false,
+})
+
 const auth = useFirebaseAuth()
 const router = useRouter()
 
