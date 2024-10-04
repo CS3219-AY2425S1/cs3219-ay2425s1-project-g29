@@ -46,7 +46,7 @@ const fetchUsers = async () => {
                 listOfUsers.map(async (user) => {
                     const isAdmin = await checkIfUidAdmin(user.uid ?? '');
                     return {
-                        display_name: user.display_name,
+                        displayName: user.display_name,
                         email: user.email,
                         uid: user.uid,
                         admin: isAdmin,
@@ -64,48 +64,26 @@ const fetchUsers = async () => {
     }
 };
 
-// const goToTokenTest = () => {
-//     return
-// }
-
 onMounted(() => {
     fetchUsers();
 })
 
 </script>
 
-
-<!-- <template>
-    <div class="container py-10 mx-auto">
-        <div v-if="isLoading && users.length === 0">Loading...</div>
-        <div v-else-if="error">An error occurred: {{ error }}</div>
-        <UserTable v-else :data="users" :key="users.length" />
-    </div>
-    <Toaster />
-</template> -->
-
 <template>
-    <div>
+    <div class="container py-10">
         <div v-if="isLoading">Loading...</div>
         <div v-else-if="error">An error occurred: {{ error }}</div>
-        <table v-else>
-            <thead>
-                <tr>
-                    <th>Display Name</th>
-                    <th>Email</th>
-                    <th>Admin</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="user in users" :key="user.uid">
-                    <td>{{ user.display_name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.admin ? 'Yes' : 'No' }}</td>
-                </tr>
-            </tbody>
-        </table>
-        <router-link to="/admin/token_test">
-            <Button>Admin Token Test Page</Button>
-        </router-link>
+        <UserTable
+            v-else
+            :data="users"
+            :key="users.length"
+        />
+        <div class="flex flex-col items-center py-10">
+            <router-link to="/admin/token_test">
+                <Button>Admin Token Test Page</Button>
+            </router-link>
+        </div>
+
     </div>
 </template>
