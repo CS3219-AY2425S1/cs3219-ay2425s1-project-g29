@@ -12,6 +12,8 @@ def create_app():
     from app.firebase import initialize_firebase
     initialize_firebase()
     
+    # Check if connection to Firebase is good
+    
     # Register Blueprints
     from app.main import main as main_bp
     app.register_blueprint(main_bp, url_prefix='/users')
