@@ -1,31 +1,20 @@
 <script setup>
-import { signOut } from 'firebase/auth';
-
-const auth = useFirebaseAuth();
-const user = useCurrentUser();
-const isAdmin = ref(true);
-
-console.log("user", user)
+import { useAuthStore } from '~/stores/auth';
 import NavLink from '~/components/navigation/NavLink.vue';
 
-const checkIfAdmin = async () => {
-    const tokenResult = await user.getIdTokenResult();
-    const adminResult = tokenResult.claims.admin === true;
-    isAdmin.value = adminResult;
-    console.log(adminResult);
-};
+const authStore = useAuthStore();
+const { user, isAdmin } = storeToRefs(authStore);
 
 function handleSignOut() {
-    signOut(auth)
+    authStore.authSignOut();
 };
 
-watch(user, (newUser) => {
+watch(user, (newUser) => {  // TODO: Check if can remove this
     if (newUser) {
-        checkIfAdmin();
+        authStore.refreshUser();
     }
 });
 </script>
-
 
 <template>
     <nav class="bg-muted/70 shadow-sm border-b border-border">

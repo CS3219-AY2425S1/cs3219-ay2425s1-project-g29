@@ -1,12 +1,15 @@
+import { useAuthStore } from "~/stores/auth";
+
 export default defineNuxtRouteMiddleware(async (to, from) => {
-    const user = await getCurrentUser();
+    const authStore = useAuthStore();
 
-    if (user) {
-        const tokenResult = await user.getIdTokenResult(true);  // Force a Token Refresh
-        const isAdmin = tokenResult.claims.admin === true;
+    if (!authStore.user) {
+        await authStore.refreshUser();
+    }
 
+    if (authStore.user) {
         // Check if the route requires admin access
-        if (to.meta.requiresAdmin && !isAdmin) {
+        if (to.meta.requiresAdmin && !authStore.isAdmin) {
             return navigateTo('/unauthorized');
         }
 

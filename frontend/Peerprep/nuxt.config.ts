@@ -8,7 +8,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
   ssr: false,
-  modules: ["nuxt-vuefire", "@nuxtjs/tailwindcss", "shadcn-nuxt", "@pinia/nuxt"],
+  modules: ["nuxt-vuefire", "@nuxtjs/tailwindcss", "shadcn-nuxt", "@pinia/nuxt", "@pinia/nuxt"],
   runtimeConfig: {
     public: {
       matchingRequestUrl: "http://localhost:8000",

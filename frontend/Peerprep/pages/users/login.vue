@@ -4,18 +4,25 @@ import {
   GoogleAuthProvider,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { useAuthStore } from '~/stores/auth';
 
 definePageMeta({
   requiresAuth: false,
 })
 
+const authStore = useAuthStore();
 const auth = useFirebaseAuth();
 const router = useRouter();
 
 function signInWithFirebase() {
-  signInWithPopup(auth, new GoogleAuthProvider()).then(() =>
-    router.replace("/")
-  );
+  signInWithPopup(auth, new GoogleAuthProvider())
+  .then(() => {
+    authStore.refreshUser();
+    router.replace("/");
+  })
+  .catch((error) => {
+    console.error("Sign-in failed", error);
+  });
 }
 
 const email = ref("");
@@ -27,7 +34,10 @@ const handleSubmit = () => {
   isLoggingIn.value = true;
   firebaseErrorMessage.value = "";
   login()
-    .then(() => router.replace("/"))
+    .then(() => {
+      authStore.refreshUser();
+      router.replace("/");
+    })
     .catch(handleFirebaseLoginErrors)
     .finally(() => {
       isLoggingIn.value = false;
