@@ -6,6 +6,7 @@ import time
 import redis
 import json
 from confluent_kafka import Producer
+from .chat_service import create_chat_session
 
 # Initialize Redis client
 r = redis.Redis(host="redis", port=6379, db=0)
@@ -61,14 +62,24 @@ def process_matching_request(self, user_data):
                     f"Complete match found: user_id={user_id}, matched_with user_id: {match.decode('utf-8')}"
                 )
 
-                push_to_kafka(
-                    user_id=user_id,
-                    match=match,
-                    category=category,
-                    difficulty=difficulty,
-                    producer=producer,
-                )
-                print(f"Kafka flush complete for complete match result")
+                match_user_id = match.decode('utf-8')
+                session_id = create_chat_session(user_id, match_user_id)
+
+                if session_id:
+                    match_result = {
+                        "user1_id": user_id,
+                        "user2_id": match_user_id,
+                        "session_id": session_id,
+                        "category": category,
+                        "difficulty": difficulty,
+                        "uid": str(uuid.uuid4()),
+                    }
+
+                    push_to_kafka(match_result)
+                    print(f"Kafka flush complete for complete match result")
+            
+                else:
+                    print("Failed to create chat session.")
                 return
 
             print(
@@ -84,14 +95,25 @@ def process_matching_request(self, user_data):
                 print(
                     f"Partial match found: user_id={user_id}, matched with user_id: {match.decode('utf-8')}"
                 )
-                push_to_kafka(
-                    user_id=user_id,
-                    match=match,
-                    category=category,
-                    difficulty=difficulty,
-                    producer=producer,
-                )
-                print(f"Kafka flush complete for parital match result")
+
+                match_user_id = match.decode('utf-8')
+                session_id = create_chat_session(user_id, match_user_id)
+
+                if session_id:
+                    match_result = {
+                        "user1_id": user_id,
+                        "user2_id": match_user_id,
+                        "session_id": session_id,
+                        "category": category,
+                        "difficulty": difficulty,
+                        "uid": str(uuid.uuid4()),
+                    }
+
+                    push_to_kafka(match_result)
+                    print(f"Kafka flush complete for complete match result")
+            
+                else:
+                    print("Failed to create chat session.")
                 return
 
             pipe.zadd(key, {str(user_id): expiration_time})
@@ -118,26 +140,17 @@ def delivery_report(record_metadata, exception):
         )
 
 
-def push_to_kafka(user_id, match, category, difficulty, producer):
+def push_to_kafka(match_result):
     try:
-        match_result = {
-            "user1_id": user_id,
-            "user2_id": match.decode("utf-8"),
-            "category": category,
-            "difficulty": difficulty,
-            "uid": str(uuid.uuid4()),
-        }
-
         print(f"Producing match result to Kafka: {match_result}")
+        producer = get_kafka_producer()
         producer.produce(
             "match_results",
-            key=str(user_id),
+            key=match_result["user1_id"],
             value=json.dumps(match_result).encode("utf-8"),
             callback=delivery_report,
         )
-        print("before flush")
         producer.flush(timeout=10)
-        print("after flush")
-
     except Exception as e:
-        print(f"Error during match result processing: {e}")
+        print(f"Failed to push to Kafka: {e}")
+

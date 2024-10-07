@@ -58,15 +58,25 @@ async def match_result_dispatcher():
         logger.info(f"curent connected clients: {connected_clients}")
         user1_id = match_result.get("user1_id")
         user2_id = match_result.get("user2_id")
+        session_id = match_result.get("session_id")  # Extract session_id
+
+        # Send session_id to both users
         if user1_id in connected_clients:
-            await send_with_retries(user1_id, match_result, max_retries=4)
+            await connected_clients[user1_id].send_text(json.dumps({
+                "type": "match_result",
+                "data": match_result
+            }))
         else:
             logger.info(f"User {user1_id} is not connected. Cannot send match result.")
 
         if user2_id in connected_clients:
-            await send_with_retries(user2_id, match_result, max_retries=4)
+            await connected_clients[user2_id].send_text(json.dumps({
+                "type": "match_result",
+                "data": match_result
+            }))
         else:
             logger.info(f"User {user2_id} is not connected. Cannot send match result.")
+
 
 
 @app.on_event("startup")

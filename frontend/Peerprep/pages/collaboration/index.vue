@@ -4,7 +4,8 @@ const collaborationStore = useCollaborationStore()
 console.log(collaborationStore.getCollaborationInfo)
 </script>
 
+
 <template>
-    <div>Collab page</div>
+    <div>Collab page_</div>
     <pre>{{ collaborationStore.getCollaborationInfo }}</pre>
 </template>
