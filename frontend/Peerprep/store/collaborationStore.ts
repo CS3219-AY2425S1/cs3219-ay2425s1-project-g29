@@ -3,6 +3,7 @@ export type TCollaborationInfo = {
   user1_id: string;
   user2_id: string;
   uid: string;
+  question_id: string;
 };
 
 export const useCollaborationStore = defineStore({

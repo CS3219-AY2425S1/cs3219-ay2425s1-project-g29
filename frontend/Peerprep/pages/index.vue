@@ -74,6 +74,7 @@ async function updateCollaborationInfo(message: any) {
     user1_id: message.user1_id,
     user2_id: message.user2_id,
     uid: message.uid,
+    question_id: message.question_id,
   };
   collaborationStore.setCollaborationInfo(collaborationInfo);
 
