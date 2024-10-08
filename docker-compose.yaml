@@ -117,7 +117,7 @@ services:
     
     build:
       context: ./frontend/Peerprep
-      dockerfile: dockerfile
+      dockerfile: Dockerfile
     volumes:
       - ./frontend/Peerprep:/src
     ports:
