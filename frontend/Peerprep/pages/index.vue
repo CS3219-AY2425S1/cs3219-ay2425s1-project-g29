@@ -1,9 +1,9 @@
 <script setup lang="ts">
-
 import { useToast } from '@/components/ui/toast/use-toast'
 import ComboBox from '@/components/ComboBox.vue'
 import { useWebSocket } from '@vueuse/core';
 import { useCollaborationStore, type TCollaborationInfo } from '~/store/collaborationStore';
+import { ref, onMounted } from 'vue';
 const auth = useFirebaseAuth();
 const user = useCurrentUser();
 const runtimeConfig = useRuntimeConfig()
@@ -20,41 +20,40 @@ const { status, data, send, open, close } = useWebSocket(`ws://localhost:8010/ws
   onMessage: handleMessage,
 });
 
-const leetcodeTopics = [
-  { value: 'arrays', label: 'Arrays' },
-  { value: 'strings', label: 'Strings' },
-  { value: 'linked-lists', label: 'Linked Lists' },
-  { value: 'binary-trees', label: 'Binary Trees' },
-  { value: 'hash-tables', label: 'Hash Tables' },
-  { value: 'dynamic-programming', label: 'Dynamic Programming' },
-  { value: 'recursion', label: 'Recursion' },
-  { value: 'binary-search', label: 'Binary Search' },
-  { value: 'sorting', label: 'Sorting' },
-  { value: 'two-pointers', label: 'Two Pointers' },
-  { value: 'greedy', label: 'Greedy Algorithms' },
-  { value: 'graphs', label: 'Graphs' },
-  { value: 'backtracking', label: 'Backtracking' },
-  { value: 'bit-manipulation', label: 'Bit Manipulation' },
-  { value: 'math', label: 'Math' },
-  { value: 'sliding-window', label: 'Sliding Window' },
-  { value: 'stacks', label: 'Stacks' },
-  { value: 'queues', label: 'Queues' },
-  { value: 'heap-priority-queue', label: 'Heap / Priority Queue' },
-  { value: 'trie', label: 'Trie' },
-  { value: 'divide-and-conquer', label: 'Divide and Conquer' },
-  { value: 'design', label: 'Design' },
-  { value: 'union-find', label: 'Union Find' },
-  { value: 'monotonic-stack', label: 'Monotonic Stack' },
-  { value: 'tree-traversal', label: 'Tree Traversal' },
-]
-
+const leetcodeTopics = ref<{ value: string; label: string }[]>([]);  // Set topics as a reactive ref
 const difficulty = ref('easy')
-const selectedCategory = ref(leetcodeTopics.length > 0 ? leetcodeTopics[0].value : '')
+const selectedCategory = ref('')
 const isProcessing = ref(false)
 const isMatching = ref(false)
 const matchFound = ref(false)
 const countdown = ref(30)
 let countdownInterval: number | null = null
+
+const fetchTopics = async () => {
+  try {
+    const { data, error } = await useFetch('http://localhost:5000/questions/categories')
+    if (error.value) {
+      throw new Error('Failed to fetch topics');
+    }
+    const categories = data.value.categories || [];
+    // console.log('Categories', categories);
+    leetcodeTopics.value = categories.map((category: string) => ({
+      value: category,
+      label: category
+    }));
+    selectedCategory.value = leetcodeTopics.value.length > 0 ? leetcodeTopics.value[0].value : '';
+  } catch (err) {
+    console.error('Error fetching topics:', err);
+    toast({
+      description: 'Failed to fetch topics.',
+      variant: 'destructive',
+    });
+  }
+};
+
+onMounted(() => {
+  fetchTopics();  // Fetch topics when the component mounts
+});
 
 async function handleMessage(ws: WebSocket, event: MessageEvent) {
   if (isMatching.value) {
@@ -71,15 +70,11 @@ async function handleMessage(ws: WebSocket, event: MessageEvent) {
 }
 
 async function updateCollaborationInfo(message: any) {
-
-
   const collaborationInfo: TCollaborationInfo = {
     user1_id: message.user1_id,
     user2_id: message.user2_id,
     uid: message.uid,
   };
-  console.log("parsed info to store:", collaborationInfo);
-
   collaborationStore.setCollaborationInfo(collaborationInfo);
 
   if (collaborationStore.isCollaborating) {
@@ -103,7 +98,6 @@ async function handleCancel() {
       })
     });
 
-    console.log("Matching request canceled successfully", response);
     isMatching.value = false;
   } catch (error: unknown) {
     isMatching.value = false;
@@ -129,7 +123,6 @@ async function handleSubmit() {
       },
       body: body
     });
-    console.log("Matching request submitted successfully", response);
     startMatchTimeout()
     isProcessing.value = false
   } catch (error: unknown) {
