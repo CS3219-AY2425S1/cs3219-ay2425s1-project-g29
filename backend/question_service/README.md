@@ -1,5 +1,9 @@
 # Question Service
 
+This service provides an questions service API for users to interact with.
+Alongside this, there is a kafka consumer that listens to match_results and appends an appropriate question.
+It the publishes this to the question_result topic.
+
 ## Setup
 
 1. Ensure you have **Python 3.8** or later installed:
