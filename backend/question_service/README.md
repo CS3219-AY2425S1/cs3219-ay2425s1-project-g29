@@ -90,4 +90,5 @@ python run.py
 - **Update a question**:  
   `PUT http://localhost:5000/questions/<id>`
   
-  
+- **GET all categories**:  
+  `GET http://localhost:5000/questions/categories`

@@ -51,6 +51,31 @@ def is_title_unique(title, exclude_id=None):
             return False 
     return True
 
+@main.route("/categories", methods=["GET"])
+def get_categories():
+    try:
+        # Retrieve all questions from Firestore
+        questions_ref = db.collection('questions').stream()
+        
+        # Set to store unique categories
+        unique_categories = set()
+        
+        # Iterate through all questions and add categories to the set
+        for question in questions_ref:
+            question_data = question.to_dict()
+            categories = question_data.get('category', [])
+            
+            # Add each category from the array to our set
+            unique_categories.update(categories)
+        
+        # Convert set to sorted list for consistent output
+        categories_list = sorted(list(unique_categories))
+        
+        return jsonify({"categories": categories_list}), 200
+    
+    except Exception as e:
+        return jsonify({"error": f"Failed to retrieve categories: {str(e)}"}), 500
+
 @main.route("/", methods=["POST"], strict_slashes=False)
 def add_question():
     # Get data from request
