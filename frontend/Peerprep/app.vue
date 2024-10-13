@@ -16,9 +16,10 @@ onMounted(() => {
 </script>
 
 <template>
-
-  <NuxtLayout>
-    <NuxtPage />
-  </NuxtLayout>
-
+  <div>
+    <Toaster />
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
+  </div>
 </template>

@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+confluent-kafka
+websockets
+uvloop
+typing-extensions
+sniffio
+pyyaml
+python-dotenv
+idna
+httptools
+exceptiongroup
+anyio
+watchfiles

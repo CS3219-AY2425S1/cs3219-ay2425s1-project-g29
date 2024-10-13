@@ -11,6 +11,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@pinia/nuxt": "^0.5.5",
     "@tanstack/vue-table": "^8.20.5",
     "@vee-validate/zod": "^4.13.2",
     "@vueuse/core": "^11.0.3",
@@ -20,6 +21,7 @@
     "lucide-vue-next": "^0.441.0",
     "nuxt": "^3.13.0",
     "nuxt-vuefire": "^1.0.4",
+    "pinia": "^2.2.4",
     "radix-vue": "^1.9.5",
     "shadcn-nuxt": "^0.10.4",
     "tailwind-merge": "^2.5.2",
@@ -32,5 +34,8 @@
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.12.1",
     "typescript": "^5.6.2"
+  },
+  "overrides": {
+    "vue": "latest"
   }
 }

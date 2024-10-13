@@ -106,6 +106,16 @@ python run.py
 - **Retrieve a list of all admins**:\
   `GET http://localhost:5001/admin/roles/admin/users`
 
+### Authorization Endpoints
+
+- **Verify Token**\
+  `POST http://localhost:5001/auth/verify_token`
+  
+  The token needs to be provided in the **Authorization** header using the **Bearer** schema of the POST request. It should also follow the format below:
+  ```
+  Authorization: Bearer <token>
+  ```
+  You can check the frontend for examples, particularly in `Peerprep/pages/admin/token_test.vue`
 ---
 
 ### Additional Notes

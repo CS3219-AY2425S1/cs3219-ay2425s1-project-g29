@@ -1,6 +1,95 @@
-version: '3.8'
-
 services:
+  kafka:
+    image: 'bitnami/kafka:latest'
+    environment:
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092 
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+    volumes:
+      - kafka_data:/bitnami/kafka
+    networks:
+      - backend_network  
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest  
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local 
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092  
+    ports:
+      - "8080:8080"  
+    depends_on:
+      - kafka  
+    networks:
+      - backend_network  
+
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - backend_network
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend_network
+
+  matching_request:
+    build:
+      context: ./backend/matching_request
+    # command: gunicorn --reload -w 4 -b 0.0.0.0:8000 run:app
+    command: python run.py
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - FLASK_ENV=development 
+      - FLASK_APP=run.py 
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/matching_request:/app
+    networks:
+      - backend_network
+
+  matching_service:
+    build:
+      context: ./backend/matching_service
+    # command: celery -A celery worker --loglevel=info
+    command: celery -A proj.celery worker --loglevel=info -Q matching_queue
+    volumes:
+      - ./backend/matching_service:/app
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    networks:
+      - backend_network
+
+  websocket_service:
+    build:
+      context: ./backend/websocket_service
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8010 --reload --log-level debug
+    volumes:
+      - ./backend/websocket_service/app/:/app/app
+    environment:
+      - KAFKA_BROKER=kafka:9092
+    depends_on:
+      - kafka
+    ports:
+      - "8010:8010"
+    networks:
+      - backend_network
+
   question_service:
     container_name: question_service
     image: question_service
@@ -23,20 +112,29 @@ services:
     ports:
       - "5001:5001"
 
-  frontend:
-    container_name: frontend
-    image: frontend
+  ui:
+    container_name: ui
+    
     build:
       context: ./frontend/Peerprep
       dockerfile: Dockerfile
+    volumes:
+      - ./frontend/Peerprep:/src
     ports:
-      - "3000:3000"  # Expose the frontend on port 3000 externally
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
     networks:
       - backend_network
     depends_on:
       - question_service
       - user_service
 
+volumes:
+  rabbitmq_data:
+  redis_data:
+  kafka_data:
+
 networks:
-  backend_network:
+  backend_network: 
     driver: bridge

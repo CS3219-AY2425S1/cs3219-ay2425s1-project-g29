@@ -1,9 +1,25 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  nitro: {
+    experimental: {
+      websocket: true,
+    },
+  },
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
   ssr: false,
-  modules: ["nuxt-vuefire", "@nuxtjs/tailwindcss", "shadcn-nuxt"],
+  modules: [
+    "nuxt-vuefire",
+    "@nuxtjs/tailwindcss",
+    "shadcn-nuxt",
+    "@pinia/nuxt",
+  ],
+  runtimeConfig: {
+    public: {
+      matchingRequestUrl: "http://localhost:8000",
+      webSocketUrl: "ws://localhost:8010",
+    },
+  },
   shadcn: {
     /**
      * Prefix for all the imported component
