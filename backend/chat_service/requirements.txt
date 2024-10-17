@@ -1,0 +1,8 @@
+firebase-admin
+Flask
+flask-cors
+python-dotenv
+waitress
+supervisor==4.2.5
+confluent-kafka  # Kafka
+pika  # RabbitMQ

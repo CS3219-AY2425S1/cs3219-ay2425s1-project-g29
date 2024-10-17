@@ -1,11 +1,14 @@
-<script setup>
-import { useCollaborationStore } from '~/store/collaborationStore';
-const collaborationStore = useCollaborationStore()
-console.log(collaborationStore.getCollaborationInfo)
-</script>
-
-
 <template>
-    <div>Collab page_</div>
-    <pre>{{ collaborationStore.getCollaborationInfo }}</pre>
-</template>
+    <div>
+      <!-- Other collaboration content e.g. the coding editor -->
+      <ChatComponent />
+    </div>
+  </template>
+  
+  <script setup>
+  import { useCollaborationStore } from '~/store/collaborationStore';
+  import ChatComponent from '~/components/ChatComponent.vue';
+  
+  const collaborationStore = useCollaborationStore();
+  </script>
+  

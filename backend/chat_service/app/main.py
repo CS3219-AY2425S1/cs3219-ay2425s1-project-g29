@@ -2,8 +2,7 @@
 import uuid
 from .firebase import db
 
-def create_chat_session(user1_id, user2_id):
-    session_id = str(uuid.uuid4())  # Generate a unique session ID
+def create_chat_session(user1_id, user2_id, session_id):
     chat_data = {
         'participants': [user1_id, user2_id],
         'created_at': firestore.SERVER_TIMESTAMP
@@ -15,6 +14,7 @@ def create_chat_session(user1_id, user2_id):
     except Exception as e:
         print(f"Error creating chat session: {e}")
         return None
+
     
 
 def add_message(session_id, sender_id, message_text):

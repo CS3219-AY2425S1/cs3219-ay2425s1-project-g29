@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { useStorage } from '@vueuse/core';
 export type TCollaborationInfo = {
   user1_id: string;
   user2_id: string;
@@ -9,7 +10,8 @@ export type TCollaborationInfo = {
 export const useCollaborationStore = defineStore({
   id: "collaboration",
   state: () => ({
-    collaborationInfo: null as TCollaborationInfo | null,
+    collaborationInfo: useStorage('collaborationInfo', null as TCollaborationInfo | null),
+    // `useSotrage`: persist collaborationInfo in reloads, w/ persistence plugin
   }),
   getters: {
     isCollaborating: (state) => state.collaborationInfo !== null,

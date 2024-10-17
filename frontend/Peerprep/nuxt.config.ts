@@ -1,4 +1,3 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   nitro: {
     experimental: {
@@ -8,37 +7,31 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
   ssr: false,
-  modules: ["nuxt-vuefire", "@nuxtjs/tailwindcss", "shadcn-nuxt", "@pinia/nuxt", "@pinia/nuxt"],
+  modules: ["nuxt-vuefire", "@nuxtjs/tailwindcss", "shadcn-nuxt", "@pinia/nuxt"],
   runtimeConfig: {
     public: {
       matchingRequestUrl: "http://localhost:8000",
       webSocketUrl: "ws://localhost:8010",
+      FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
+      FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
+      FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+      FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
+      FIREBASE_MESSAGING_SENDER_ID: process.env.FIREBASE_MESSAGING_SENDER_ID,
+      FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
     },
   },
   shadcn: {
     /**
-     * Prefix for all the imported component
+     * Prefix for all the imported components
      */
     prefix: "",
     /**
-     * Directory that the component lives in.
+     * Directory where the components live.
      * @default "./components/ui"
      */
     componentDir: "./components/ui",
   },
-  // app: {
-  //   head: {
-  //     htmlAttrs: {
-  //       'data-bs-theme': 'dark'
-  //     },
-  //     link: [
-  //       { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css'}
-  //     ],
-  //     script: [
-  //       { src: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js'}
-  //     ],
-  //   }
-  // },
+  
   vuefire: {
     auth: {
       enabled: true,
@@ -52,5 +45,8 @@ export default defineNuxtConfig({
       messagingSenderId: "1075086955666",
       appId: "1:1075086955666:web:8929f9277a3a982847c24b",
     },
+  },
+  router: {
+    middleware: ['collaboration'],
   },
 });

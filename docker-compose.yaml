@@ -130,6 +130,23 @@ services:
       - question_service
       - user_service
 
+  chat_service:
+    container_name: chat_service
+    build:
+      context: ./backend/chat_service  
+      dockerfile: Dockerfile
+    ports:
+      - '5002:5000'  
+    environment:
+      - FLASK_ENV=development  
+      - OTHER_ENV_VAR=value  
+    depends_on:
+      - kafka 
+    volumes:
+      - ./backend/chat_service:/app  
+    networks:
+      - backend_network
+
 volumes:
   rabbitmq_data:
   redis_data:
