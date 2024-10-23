@@ -1,0 +1,5 @@
+firebase-admin
+Flask
+flask-cors
+python-dotenv
+waitress

@@ -1,0 +1,57 @@
+name: Docker Compose Build and Test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Set up Docker Buildx (if needed)
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    # Pull in environment variables for backend and frontend services
+    - name: Set up environment variables for frontend (Peerprep)
+      run: echo "FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }}" > frontend/Peerprep/.env
+
+    - name: Set up environment variables for backend services (question-service, user-service)
+      run: |
+        echo "CRED_PATH=./firebase-cred.json" > backend/question_service/.env
+        echo "CRED_PATH=./firebase-cred.json" > backend/user_service/.env
+
+    # Add firebase-cred.json file to backend services
+    - name: Add Firebase credentials
+      run: |
+        echo "${{ secrets.FIREBASE_CRED_JSON }}" > backend/question_service/firebase-cred.json
+        echo "${{ secrets.FIREBASE_CRED_JSON }}" > backend/user_service/firebase-cred.json
+
+    # Build services using docker-compose
+    - name: Build and Test with Docker Compose
+      run: docker compose -f docker-compose.yaml up -d --build
+
+    # sleep to wait for services to start runnning
+    - name: Wait for services to start running 
+      run: sleep 50
+
+    # Check if all services are running
+    - name: Check if all services are running
+      run: |
+        running="$(docker compose ps --services --filter "status=running")"
+        services="$(docker compose ps --services)"
+        if [ "$running" != "$services" ]; then
+          echo "Following services are not running:" 
+          comm -13 <(sort <<<"$running") <(sort <<<"$services")
+        else
+          echo "All services are running"
+        fi
+
+    # Optionally, clean up afterward
+    - name: Cleanup
+      run: docker compose down
