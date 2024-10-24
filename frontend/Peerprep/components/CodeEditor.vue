@@ -25,7 +25,7 @@ onMounted(() => {
     });
 
     // Sync editor content with Firebase Firestore
-    const docRef = doc(db, 'collaborations', '4a6tr2wuUKI385yoGmq9');
+    const docRef = doc(db, 'collaborations', session_info.uid);
 
     // Check if the document exists in Firestore
     getDoc(docRef)
