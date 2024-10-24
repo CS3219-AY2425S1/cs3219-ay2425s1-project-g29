@@ -17,6 +17,7 @@
     "@vueuse/core": "^11.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "codemirror": "^5.65.18",
     "firebase": "^10.13.1",
     "lucide-vue-next": "^0.441.0",
     "nuxt": "^3.13.0",

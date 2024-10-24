@@ -24,7 +24,7 @@ watch(user, (newUser) => {  // TODO: Check if can remove this
                 <div class="flex items-center space-x-6">
                     <NavLink to="/" exact>Home</NavLink>
                     <NavLink to="/questions">Questions</NavLink>
-                    <!-- <NavLink to="/collaboration">Collaboration</NavLink> -->
+                    <NavLink to="/collaboration">Collaboration</NavLink>
                 </div>
             </div>
 
