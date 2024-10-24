@@ -11,7 +11,7 @@ let actualToken = "";
 const isAdmin = ref('');
 const user = await getCurrentUser();
 const userDetails = ref('');
-const userServiceResponse = ref('')
+const userServiceResponse = ref('');
 
 const getUserToken = async () => {
     const tokenResult = await user.getIdTokenResult();

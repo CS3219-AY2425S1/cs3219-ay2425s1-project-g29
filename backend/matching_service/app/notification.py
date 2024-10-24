@@ -2,6 +2,7 @@ import asyncio
 import websockets
 import json
 import logging
+import requests
 from confluent_kafka import Consumer, KafkaError
 from redis_client import get_redis_client
 import time
@@ -73,6 +74,7 @@ async def kafka_consumer():
             message = json.loads(message_value)
 
             logger.info(f"Received message from question_results: {message_value}")
+            requests.post("http://user_service:5001/users/history", json=message)
             user1_id = message.get("user1_id")
             user2_id = message.get("user2_id")
             user1_state = redis_client.hget(f"user:{user1_id}", "state").decode("utf-8")

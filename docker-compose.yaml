@@ -56,14 +56,14 @@ services:
     container_name: ui
     build:
       context: ./frontend/Peerprep
-      dockerfile: Dockerfile  # Dockerfile.dev
+      dockerfile: Dockerfile.dev  # Dockerfile.dev
     volumes:
       - ./frontend/Peerprep:/src
-      # - node_modules:/src/node_modules  # Only for development
+      - node_modules:/src/node_modules  # Only for development
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production  # production
+      - NODE_ENV=development  # production
       - CHOKIDAR_USEPOLLING=true  # For Windows machines, so file changes are detected by nuxt
     networks:
       - backend_network
@@ -112,7 +112,7 @@ services:
       context: ./backend/user_service
       dockerfile: Dockerfile
     environment:
-      - FLASK_ENV=production  # development
+      - FLASK_ENV=development  # development
     networks:
       - backend_network
     ports:
@@ -121,7 +121,7 @@ services:
 volumes:
   redis_data:
   kafka_data:
-  # node_modules:  # For ui dev mode
+  node_modules:  # For ui dev mode
 
 networks:
   backend_network: 

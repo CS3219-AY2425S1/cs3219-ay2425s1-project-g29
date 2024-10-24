@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import type { User } from '~/types/User'
+import type { User, UserNet } from '~/types/User'
 import UserTable from '@/components/user_list/UserTable.vue';
 
 definePageMeta({
@@ -43,9 +42,10 @@ const fetchUsers = async () => {
 
             // Map through each user and add the admin status
             const usersWithAdminStatus = await Promise.all(
-                listOfUsers.map(async (user) => {
+                listOfUsers.map(async (user: UserNet, index: number) => {
                     const isAdmin = await checkIfUidAdmin(user.uid ?? '');
                     return {
+                        index: index + 1,
                         displayName: user.display_name,
                         email: user.email,
                         uid: user.uid,

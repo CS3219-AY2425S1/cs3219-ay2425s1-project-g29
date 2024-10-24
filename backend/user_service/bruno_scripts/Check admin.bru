@@ -1,0 +1,11 @@
+meta {
+  name: Check admin
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{base_url}}/admin/users/{{user_id}}/is_admin
+  body: none
+  auth: none
+}

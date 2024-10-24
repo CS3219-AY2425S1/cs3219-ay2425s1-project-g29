@@ -1,0 +1,27 @@
+meta {
+  name: Submit New Attempt
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{base_url}}/users/history
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "user1_id": "VDpNaHVOLiSBT1cyARExzFj1xG23",
+    "user2_id": "QjkoXU89eXR2t7Ws2c60Ires4Ew1",
+    "category": "Algorithms",
+    "difficulty": "easy",
+    "uid": "ada72c60-3b2f-4559-8c58-7199e670c24e",
+    "status": "complete match",
+    "timestamp": 1729500216.228071,
+    "question_id": "FbO3DEVwJmVKguP8TecA",
+    "question_title": "Reverse a String",
+    "match_difficulty": "easy",
+    "actual_difficulty": "easy"
+  }
+}

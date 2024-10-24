@@ -1,0 +1,11 @@
+meta {
+  name: Get user roles
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{base_url}}/admin/users/{{user_id}}/roles
+  body: none
+  auth: none
+}

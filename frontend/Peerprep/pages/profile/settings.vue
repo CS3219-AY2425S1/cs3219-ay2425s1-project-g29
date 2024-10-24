@@ -7,12 +7,10 @@ import { ref } from 'vue';
 const displayName = ref('');
 const email = ref('');
 const currentPass = ref('');
-const deleteAccCurrentPass = ref('');
 const newPass = ref('');
 const confirmNewPass = ref('');
 const isUpdatingProfile = ref(false);
 const isUpdatingPassword = ref(false);
-const isDeletingAccount = ref(false);
 const showInvalidDisplayNameLengthError = ref(false);
 const showInvalidDisplayNameContentsError = ref(false);
 const showInvalidOldPasswordError = ref(false);
@@ -24,7 +22,6 @@ const { toast } = useToast();
 const displayNameLengthNotValid = () => {
     const displayNameValue = displayName.value || '';
     const displayNameLengthCheck = displayNameValue.length >= 2 && displayNameValue.length <= 50;
-    console.log(displayNameValue.length);
     return !displayNameLengthCheck
 };
 
@@ -203,5 +200,14 @@ onMounted(() => {
                     changed.</div>
             </form>
         </div>
+        <div>
+            <h2 class="text-2xl font-bold tracking-tight">Delete Your Account</h2>
+            <p class="text-muted-foreground text-sm mt-1">This action is irreversible!</p>
+            <div class="mt-2">
+                <DeleteAccountConfirmPasswordDialog v-if="!isGoogleLogin"></DeleteAccountConfirmPasswordDialog>
+                <DeleteAccountConfirmGoogleDialog v-if="isGoogleLogin"></DeleteAccountConfirmGoogleDialog>
+            </div>
+        </div>
+        
     </div>
 </template>

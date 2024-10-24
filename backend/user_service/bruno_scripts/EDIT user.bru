@@ -1,0 +1,18 @@
+meta {
+  name: EDIT user
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{base_url}}/users/{{user_id}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "displayName": "Yu Heng Lee",
+    "email": "lee2000yh@gmail.com"
+  }
+}

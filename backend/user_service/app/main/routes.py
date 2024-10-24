@@ -3,6 +3,9 @@ from flask import jsonify, request
 from firebase_admin import auth
 from datetime import datetime, timedelta
 
+# Import the attempt history blueprint
+from .history_routes import history
+main.register_blueprint(history)
 
 def user_to_dict(user):
     return {

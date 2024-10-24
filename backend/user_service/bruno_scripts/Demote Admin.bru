@@ -1,0 +1,11 @@
+meta {
+  name: Demote Admin
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{base_url}}/admin/users/{{user_id}}/roles/admin
+  body: none
+  auth: none
+}
