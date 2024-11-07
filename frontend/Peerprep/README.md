@@ -20,7 +20,7 @@ npm install
   - `FIREBASE_API_KEY` which you can get from the firebase console.
   - `HOST_ADDRESS` = localhost or the static ip (for deployment).
   - `LB_API_KEY` which you can get from the liveblocks dashboard
-  - `OPENAI_API_KEY` which you can get from openai [api-keys page](https://github.com/coreybutler/nvm-windows)
+  - `OPENAI_API_KEY` which you can get from openai [api-keys page](https://platform.openai.com/api-keys)
 
 ## Development Server
 
