@@ -4,6 +4,8 @@ import { getColumns } from '@/components/questions/columns'; // Import getColumn
 import {
   FlexRender,
   getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
   useVueTable,
 } from '@tanstack/vue-table';
 
@@ -27,12 +29,17 @@ const table = useVueTable({
   get data() { return props.data },
   get columns() { return columns }, // Use dynamically created columns
   getCoreRowModel: getCoreRowModel(),
+  getFilteredRowModel: getFilteredRowModel(),
+  getSortedRowModel: getSortedRowModel(),
 });
 </script>
 
 <template>
   <div class="flex flex-col items-center justify-center gap-y-4">
     <div class="flex w-full items-center">
+      <Input class="max-w-sm" placeholder="Filter Question Category..."
+                :model-value="table.getColumn('category')?.getFilterValue() as string"
+                @update:model-value=" table.getColumn('category')?.setFilterValue($event)" />
       <h2 class="text-lg font-semibold mx-auto">Questions</h2>
       <CreateQuestionDialog :refresh-data="props.refreshData" />
     </div>
