@@ -37,6 +37,9 @@ const table = useVueTable({
 <template>
   <div class="flex flex-col items-center justify-center gap-y-4">
     <div class="flex w-full items-center">
+      <Input class="max-w-sm" placeholder="Filter Question Category..."
+                :model-value="table.getColumn('category')?.getFilterValue() as string"
+                @update:model-value=" table.getColumn('category')?.setFilterValue($event)" />
       <h2 class="text-lg font-semibold mx-auto">Questions</h2>
       <CreateQuestionDialog :refresh-data="props.refreshData" />
     </div>
