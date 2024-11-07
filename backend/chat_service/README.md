@@ -1,8 +1,7 @@
-# Question Service
+# Chat Service
 
-This service provides an questions service API for users to interact with.
-Alongside this, there is a kafka consumer that listens to match_results and appends an appropriate question.
-It the publishes this to the question_result topic.
+This service provides a chat service API for users to interact with.
+Alongside this, it uses websockets to interact with the frontend for real-time feedback
 
 ## Setup
 
@@ -38,7 +37,7 @@ It the publishes this to the question_result topic.
 
 ## Environment Variables
 
-1. Create a `.env` file in the `question_service` directory.
+1. Create a `.env` file in the `chat_service` directory.
 2. To retrieve the Firebase credentials file:
    - Go to the [Firebase Console](https://console.firebase.google.com/).
    - Navigate to **Project Settings** → **Service Accounts** → **Firebase Admin SDK** -> **Generate new private key**.
@@ -53,38 +52,25 @@ It the publishes this to the question_result topic.
    ```
    .\venv\Scripts\activate
    ```
-2. Navigate to the `question_service` directory.
+2. Navigate to the `chat_service` directory.
 3. Start the Flask server
    ```
    python run.py
-   ```
-4. In a separate terminal start the `kafka_consumer`
-   ```
-   python app/main/kafka_consumer.py
    ```
 
 ## Using the Dockerfile 
 1. Make sure the `CRED_PATH` file in the `.env` is using the correct path formatting (i.e. `./firebase-cred.json` NOT `.\\firebase-cred.json`) as the container runs on linux.
 2. Change the line copying the credentials file into the dockerfile to use the correct name of your json.
-3. Run `docker build -t question-service .` in the `question_service` directory to create a Docker image.
-4. Run `docker run -d -p 5000:5000 question-service` to start the Docker container.
+3. Run `docker build -t chat-service .` in the `chat_service` directory to create a Docker image.
+4. Run `docker run -d -p 5002:5002 chat-service` to start the Docker container.
 
 ## Available Endpoints
 
-- **Get all questions**:  
-  `GET http://localhost:5000/questions`
+- **Adds a new session to the sessionlist**:  
+  `POST http://localhost:5002/api/sessions`
   
-- **Get one question by ID**:
-  `GET http://localhost:5000/questions/<id>`
+- **Get conversastions by username**:
+  `GET http://localhost:5002/api/conversations/<username>`
 
-- **Add a question**:  
-  `POST http://localhost:5000/questions`
-
-- **Delete a question**:  
-  `DELETE http://localhost:5000/questions/<id>`
-  
-- **Update a question**:  
-  `PUT http://localhost:5000/questions/<id>`
-  
-- **GET all categories**:  
-  `GET http://localhost:5000/questions/categories`
+- **Get specific chat records from a conversation**:  
+  `GET http://localhost:5002/api/history/<conversation>`
