@@ -56,14 +56,23 @@ async function fetchAdvice(type) {
         prompt = `Give general advice in less than 50 words on how to tackle this coding problem: ${problem} based on current code: ${curr_code}`;
         break;
       case 'styling':
-        prompt = `Provide styling tips in less than 50 words for the following code: ${curr_code}`;
+        prompt = `Provide styling tips in less than 50 words specifically for the following code: ${curr_code}`;
         break;
       case 'optimization':
-        prompt = `Suggest optimization strategies in less than 50 words for a coding problem about: ${problem} based on current code: ${curr_code}`;
+        prompt = `Suggest optimization strategies in less than 50 words for a coding problem about: ${problem} specifically based on current code: ${curr_code}`;
         break;
     }
+    prompt += "\n Try to be specific and concise."
 
-    const response = await chat(prompt);
+    const response = await chat(prompt, 
+                                'gpt-3.5-turbo', //model
+                                {  //options
+                                  temperature: 0.5, 
+                                  max_tokens: 1024, 
+                                  top_p: 1,
+                                  frequency_penalty: 0,
+                                  presence_penalty: 0 
+                                });
     advice.value = response || 'No advice available at this time.';
   } catch (error) {
     console.error('Error fetching advice:', error);
