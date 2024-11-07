@@ -119,6 +119,36 @@ python run.py
   Authorization: Bearer <token>
   ```
   You can check the frontend for examples, particularly in `Peerprep/pages/admin/token_test.vue`
+
+### Attempt History Checking Endpoints
+
+- **Record New Attempt**\
+  `POST /users/history`
+
+  Takes in a JSON in the request body which should have the following format:
+  ```
+  {
+    "user1_id": "VDpNaHVOLiSBT1cyARExzFj1xG23",
+    "user2_id": "QjkoXU89eXR2t7Ws2c60Ires4Ew1",
+    "category": "Algorithms",
+    "difficulty": "easy",
+    "uid": "ada72c60-3b2f-4559-8c58-7199e670c24e",
+    "status": "complete match",
+    "timestamp": 1729500216.228071,
+    "question_id": "FbO3DEVwJmVKguP8TecA",
+    "question_title": "Reverse a String",
+    "match_difficulty": "easy",
+    "actual_difficulty": "easy"
+  }
+  ```
+
+- **Retrieve User Attempt History**\
+  `GET /users/<user_id>/history`
+
+- **Retrieve Specific Attempt Details**\
+  `GET /users/<user_id>/history/<session_id>`
+
+
 ---
 
 ### Additional Notes
