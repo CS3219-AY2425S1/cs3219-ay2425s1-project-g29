@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import type { Question } from "~/types/Question";
 import QuestionTableDropDown from "./QuestionTableDropDown.vue";
 
+const difficultyOrder = ['easy', 'medium', 'hard'];
+
 export const getColumns = (refreshData: () => void): ColumnDef<Question>[] => [
   { 
     accessorKey: "index", 
@@ -45,6 +47,11 @@ export const getColumns = (refreshData: () => void): ColumnDef<Question>[] => [
         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
       }, () => ['Difficulty', h(ArrowUpDown, { class: 'ml-1 h-4 w-4' })])
     }, 
+    sortingFn: (a, b) => {
+      const aValue = a.original.difficulty;
+      const bValue = b.original.difficulty;
+      return difficultyOrder.indexOf(aValue) - difficultyOrder.indexOf(bValue);
+    }
   },
   {
     id: "actions",
