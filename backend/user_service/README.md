@@ -1,5 +1,8 @@
 # User Management Service
 
+This service provides a user service API for the frontend to interact with.
+This manages things like user attempt history as well as user details.
+
 ## Setup
 
 1. Ensure you have **Python 3.8** or later installed:

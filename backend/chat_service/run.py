@@ -36,7 +36,7 @@ chat_cache = {}
 
 
 @app.route("/api/sessions", methods=["POST"])
-# adds a new session to the esssionlist collection
+# adds a new session to the sessionlist collection
 # returns session data
 def create_session():
     data = request.json
