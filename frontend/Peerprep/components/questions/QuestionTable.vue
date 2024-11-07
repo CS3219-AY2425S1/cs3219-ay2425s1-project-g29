@@ -4,6 +4,8 @@ import { getColumns } from '@/components/questions/columns'; // Import getColumn
 import {
   FlexRender,
   getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
   useVueTable,
 } from '@tanstack/vue-table';
 
@@ -27,6 +29,8 @@ const table = useVueTable({
   get data() { return props.data },
   get columns() { return columns }, // Use dynamically created columns
   getCoreRowModel: getCoreRowModel(),
+  getFilteredRowModel: getFilteredRowModel(),
+  getSortedRowModel: getSortedRowModel(),
 });
 </script>
 
