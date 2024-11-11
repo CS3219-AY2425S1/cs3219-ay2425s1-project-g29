@@ -64,8 +64,8 @@ const terminateCollaboration = () => {
 <template>
   <div class="page-container">
     <div class="question-box">
-      <h3 class="question-title">{{ question.title }}</h3>
-      <p>{{ question.description }}</p>
+      <h3 class="question-title">{{ question?.title || "" }}</h3>
+      <p>{{ question?.description || "" }}</p>
     </div>
     <AdviceBox style="padding-bottom: 20px;" v-if="question" :description="question.description" :uid="session_info.uid"/>
     <div style="display:flex; width:100%;">
