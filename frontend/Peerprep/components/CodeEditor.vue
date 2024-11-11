@@ -94,7 +94,6 @@ onMounted(async () => {
   // Listen to changes in the `status` field in Firestore
   onSnapshot(docRef, (snapshot) => {
     const data = snapshot.data();
-    console.log(data);
     if (data && data.isTerminated) {
       view.current.dispatch({
         effects: editableCompartment.reconfigure(EditorView.editable.of(false)),
@@ -110,7 +109,6 @@ onMounted(async () => {
       if (terminated) {
         try {
           // Update Firestore status to "terminated"
-          console.log("local termination")
           await updateDoc(docRef, { isTerminated: true });
         } catch (error) {
           console.error('Error updating collaboration status:', error);
