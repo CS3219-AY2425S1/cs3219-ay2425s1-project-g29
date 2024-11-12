@@ -1,0 +1,30 @@
+name: SSH Deployment to GCP VM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GCP_SSH }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "peerprep.store" >> ~/.ssh/known_hosts
+
+      - name: SSH into VM and Deploy
+        run: |
+          ssh -i ~/.ssh/id_rsa gaoyunfan8@peerprep.store << 'EOF'
+            cd peerprep || exit
+            docker compose down
+            git stash
+            git pull origin main
+            git stash pop
+            docker compose build --no-cache && docker compose up -d
+            echo "Deployment completed successfully on the VM"
+          EOF

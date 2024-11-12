@@ -136,7 +136,6 @@ async def send_with_retries(user_id, message, max_retries=4):
             if user_id in connected_clients:
                 websocket = connected_clients[user_id]
                 await websocket.send(json.dumps(message))
-                # logger.info(f"Sent message to user {user_id}: {message}")
                 return True
         except Exception as e:
             logger.error(

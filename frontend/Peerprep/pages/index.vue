@@ -77,10 +77,8 @@ async function handleMessage(ws: WebSocket, event: MessageEvent) {
           variant: 'destructive',
         });
       } else {
-        // Update collaboration info first
         await updateCollaborationInfo(message, status);
 
-        // Retrieve the uid from the collaborationStore
         const collaborationInfo = collaborationStore.getCollaborationInfo;
 
         if (!collaborationInfo) {
@@ -98,13 +96,13 @@ async function handleMessage(ws: WebSocket, event: MessageEvent) {
           send(JSON.stringify(ack));
           console.log('sending ack:', ack);
           toast({
-            description: `${formattedStatus} found! Matched with user ${message.user2_id}. Question ID: ${message.question_id}. Difficulty: ${message.difficulty}. Category: ${message.category}`,
+            description: `${formattedStatus} found! Matched with user ${message.user2_id}. Question ID: ${message.question_id}. Difficulty: ${message.actual_difficulty}. Category: ${message.category}`,
           });
           createSession(sessionId, message.user1_id); // Use sessionId from store
         } else {
           createSession(sessionId, message.user2_id); // Use sessionId from store
           toast({
-            description: `${formattedStatus} found! Matched with user ${message.user1_id}. Question ID: ${message.question_id}. Difficulty: ${message.difficulty}. Category: ${message.category}`,
+            description: `${formattedStatus} found! Matched with user ${message.user1_id}. Question ID: ${message.question_id}. Difficulty: ${message.actual_difficulty}. Category: ${message.category}`,
           });
         }
 
