@@ -45,25 +45,29 @@ const sendMessage = () => {
 // Function for sending "stop" message
 const sendStopMessage = () => {
   if (selectedConversation.value) {
-    socket.emit('chat message', { 
+    const terminationData = { 
       conversation: selectedConversation.value, 
       message: "user has exited collaboration", 
       username: user?.value?.email 
-    });
+    };
+    socket.emit('chat message', terminationData);
     collaborationActive.value = false; // Disable send box immediately
   }
 };
 
 // Function to receive messages
 const receiveMessage = (msg: { conversation: string; message: Message }) => {
+  console.log('Received Message:', msg);
   if (msg.conversation === selectedConversation.value) {
     messages.value.push(msg.message);
     // Sort messages by timestamp after adding the new message
     messages.value.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
     
     // Check if the received message indicates termination
-    if (msg.message.message === "user has exited collaboration") {
+    if (msg.message.message.trim().toLowerCase() === "user has exited collaboration") {
+      console.warn('Collaboration has been terminated by another user.');
       collaborationActive.value = false;
+      collaborationStore.clearCollaborationInfo();
     }
   }
 };
@@ -121,9 +125,12 @@ const formatTimestamp = (timestamp: string | number | Date) => {
 // Function to load the active conversation
 const loadActiveConversation = async () => {
   try {
+    console.log('Fetching active conversations for UID:', user?.value?.uid);
     const response = await axios.get(`${runtimeConfig.public.chatService}/api/conversations/${user?.value?.uid}`);
-    const activeConversation = response.data.conversations.find((conv: any) => conv.flag === 'active');
+    console.log('Conversations API Response:', response.data);
+    const activeConversation = response.data.conversations.find((conv: any) => conv.flag.toLowerCase() === 'active');
     if (activeConversation) {
+      console.log('Active Conversation Found:', activeConversation);
       selectedConversation.value = activeConversation.sessionName;
       loadHistory(activeConversation.sessionName);
     } else {
@@ -138,15 +145,17 @@ const loadActiveConversation = async () => {
 
 // Function to handle inactive session scenarios
 const handleInactiveSession = () => {
+  console.warn('Handling inactive session.');
   collaborationActive.value = false;
-  // Optionally, you can clear the collaboration info from the store
-  // collaborationStore.clearCollaborationInfo();
+  collaborationStore.clearCollaborationInfo();
 };
 
 // Function to load chat history
 const loadHistory = async (conversation: string) => {
   try {
+    console.log(`Loading chat history for conversation: ${conversation}`);
     const response = await axios.get(`${runtimeConfig.public.chatService}/api/history/${conversation}`);
+    console.log(`Chat History for ${conversation}:`, response.data.messages);
     messages.value = response.data.messages;
     selectedConversation.value = conversation;
 
@@ -154,9 +163,11 @@ const loadHistory = async (conversation: string) => {
     messages.value.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
     // Check if any message indicates termination
-    const terminationMessage = messages.value.find(msg => msg.message === "user has exited collaboration");
+    const terminationMessage = messages.value.find(msg => msg.message.trim().toLowerCase() === "user has exited collaboration");
     if (terminationMessage) {
+      console.warn('Termination message found in history:', terminationMessage);
       collaborationActive.value = false;
+      collaborationStore.clearCollaborationInfo();
     }
   } catch (error) {
     console.error('Error loading history:', error);
@@ -166,21 +177,16 @@ const loadHistory = async (conversation: string) => {
 
 // When component is mounted, set up Socket.IO events
 onMounted(() => {
+  console.log('Component mounted. Initializing Socket.IO listeners.');
   socket.on('chat message', receiveMessage);
   
   // Load the active conversation on mount
   loadActiveConversation();
-
-  // Make sure the users do not get redirected faster than socket 
-  setTimeout(async () => {
-    if (!selectedConversation.value) {
-      await loadActiveConversation();
-    }
-  }, 500);
 });
 
 // When component is unmounted, remove Socket.IO events
 onUnmounted(() => {
+  console.log('Component unmounted. Removing Socket.IO listeners.');
   socket.off('chat message', receiveMessage);
 });
 
