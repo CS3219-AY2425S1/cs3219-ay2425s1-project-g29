@@ -63,6 +63,7 @@ const getLanguageExtension = () => {
   }
 };
 
+
 onMounted(async () => {
   // Create the Firestore document reference
   const docRef = doc(db, 'collaborations', session_info.uid);
@@ -94,6 +95,7 @@ onMounted(async () => {
   // Listen to changes in the `status` field in Firestore
   onSnapshot(docRef, (snapshot) => {
     const data = snapshot.data();
+    props.isTerminated = data.isTerminated;
     if (data && data.isTerminated) {
       view.current.dispatch({
         effects: editableCompartment.reconfigure(EditorView.editable.of(false)),
@@ -154,7 +156,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <select v-model="language">
+  <select v-model="language" :disabled="props.isTerminated">
     <option value="javascript">JavaScript</option>
     <option value="python">Python</option>
     <option value="cpp">C++</option>
