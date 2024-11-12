@@ -16,6 +16,8 @@ const question = ref(null); // Store the fetched question
 const isLoading = ref(false);
 const error = ref(null);
 
+const isTerminated = ref(false);
+
 const fetchQuestion = async (id) => {
   try {
     isLoading.value = true;
@@ -49,6 +51,7 @@ onMounted(() => {
 
 const terminateCollaboration = () => {
   try {
+    isTerminated.value = true;
     collaborationStore.clearCollaborationInfo();
     chatRef.value?.sendStopMessage(); // Trigger the stop message in Chat component
     navigateTo('/');
@@ -61,8 +64,8 @@ const terminateCollaboration = () => {
 <template>
   <div class="page-container">
     <div class="question-box">
-      <h3 class="question-title">{{ question.title }}</h3>
-      <p>{{ question.description }}</p>
+      <h3 class="question-title">{{ question?.title || "" }}</h3>
+      <p>{{ question?.description || "" }}</p>
     </div>
     <AdviceBox style="padding-bottom: 20px;" v-if="question" :description="question.description" :uid="session_info.uid"/>
     <div style="display:flex; width:100%;">
@@ -70,10 +73,10 @@ const terminateCollaboration = () => {
         <Chat ref="chatRef" />
       </div>
       <div style="flex:3; overflow-y:auto; max-height: 500px; background-color: #282c34;">
-        <CodeEditor/>
+        <CodeEditor :isTerminated="isTerminated" />
       </div>
     </div>
-    <div style="margin-top: 8px; text-align: right;">
+    <div style="margin-top: 8px; text-align: right; padding-bottom: 10px;">
       <button class="red-button" @click="terminateCollaboration">
         Terminate Collaboration
       </button>
