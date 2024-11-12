@@ -127,6 +127,7 @@ onMounted(async () => {
         getLanguageExtension(),
         yCollab(yText, yProvider.awareness),
         oneDark,
+        editableCompartment.of(EditorView.editable.of(!props.isTerminated)),
       ],
     });
     view.current.setState(newState);
