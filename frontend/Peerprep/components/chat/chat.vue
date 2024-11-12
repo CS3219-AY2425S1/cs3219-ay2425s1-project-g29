@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, defineExpose } from 'vue';
 import Toaster from '@/components/ui/toast/Toaster.vue';
 import { io } from "socket.io-client";
 import axios from 'axios';
+import { useCollaborationStore } from '~/stores/collaborationStore';
 
 // Define the Message interface
 interface Message {
@@ -15,6 +16,7 @@ interface Message {
 
 const user = useCurrentUser();
 const runtimeConfig = useRuntimeConfig();
+const collaborationStore = useCollaborationStore();
 
 // Connect to Socket.IO server
 const socket = io(runtimeConfig.public.chatService); // Server address
@@ -23,10 +25,12 @@ const socket = io(runtimeConfig.public.chatService); // Server address
 const messages = ref<Message[]>([]);
 const message = ref('');
 const selectedConversation = ref<string | null>(null); // Track selected conversation
+const collaborationActive = ref(true); // Track collaboration status
 
 // Function for sending message
 const sendMessage = () => {
-  console.log(message.value);
+  if (!collaborationActive.value) return; // Prevent sending if collaboration is inactive
+  
   if (message.value.trim() && selectedConversation.value) {
     const messageData = {
       conversation: selectedConversation.value,
@@ -46,6 +50,7 @@ const sendStopMessage = () => {
       message: "user has exited collaboration", 
       username: user?.value?.email 
     });
+    collaborationActive.value = false; // Disable send box immediately
   }
 };
 
@@ -55,6 +60,11 @@ const receiveMessage = (msg: { conversation: string; message: Message }) => {
     messages.value.push(msg.message);
     // Sort messages by timestamp after adding the new message
     messages.value.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    
+    // Check if the received message indicates termination
+    if (msg.message.message === "user has exited collaboration") {
+      collaborationActive.value = false;
+    }
   }
 };
 
@@ -117,11 +127,20 @@ const loadActiveConversation = async () => {
       selectedConversation.value = activeConversation.sessionName;
       loadHistory(activeConversation.sessionName);
     } else {
-      console.error('No active conversation found.');
+      console.warn('No active conversation found.');
+      handleInactiveSession();
     }
   } catch (error) {
     console.error('Error loading active conversation:', error);
+    handleInactiveSession();
   }
+};
+
+// Function to handle inactive session scenarios
+const handleInactiveSession = () => {
+  collaborationActive.value = false;
+  // Optionally, you can clear the collaboration info from the store
+  // collaborationStore.clearCollaborationInfo();
 };
 
 // Function to load chat history
@@ -133,8 +152,15 @@ const loadHistory = async (conversation: string) => {
 
     // Sort messages by timestamp after loading history
     messages.value.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+    // Check if any message indicates termination
+    const terminationMessage = messages.value.find(msg => msg.message === "user has exited collaboration");
+    if (terminationMessage) {
+      collaborationActive.value = false;
+    }
   } catch (error) {
     console.error('Error loading history:', error);
+    handleInactiveSession();
   }
 };
 
@@ -145,7 +171,7 @@ onMounted(() => {
   // Load the active conversation on mount
   loadActiveConversation();
 
-  // make sure the users do not get redirected faster than socket 
+  // Make sure the users do not get redirected faster than socket 
   setTimeout(async () => {
     if (!selectedConversation.value) {
       await loadActiveConversation();
@@ -185,12 +211,22 @@ defineExpose({
         @keyup.enter="sendMessage"
         placeholder="Message..."
         class="input-message"
+        :disabled="!collaborationActive"
       />
-      <button @click="sendMessage" class="send-button">Send</button>
+      <button 
+        @click="sendMessage" 
+        :disabled="!collaborationActive" 
+        :class="{'disabled-button': !collaborationActive}" 
+        class="send-button">
+        Send
+      </button>
       <button @click="sendStopMessage" class="stop-button">Stop</button>
     </div>
   </div>
   <Toaster />
+  <div v-if="!collaborationActive" class="notification">
+    Session ended. Click "Terminate Collaboration" to return to the main page.
+  </div>
 </template>
 
 <style scoped>
@@ -258,11 +294,25 @@ defineExpose({
   transition: background-color 0.3s;
 }
 
+.disabled-button {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
 .stop-button {
   display: none;
 }
 
 .send-button:hover {
   background-color: #0056b3;
+}
+
+.notification {
+  background-color: #ffdddd;
+  border-left: 6px solid #f44336;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 4px;
+  text-align: center;
 }
 </style>
