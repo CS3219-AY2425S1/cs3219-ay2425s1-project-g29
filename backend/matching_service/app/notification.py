@@ -193,8 +193,8 @@ async def handle_ack(user1_id, status, data):
         await send_with_retries(user2_id, cancelled_message)
 
 
-async def websocket_handler(websocket, path):
-    user_id = path.split("/")[-1]
+async def websocket_handler(websocket):
+    user_id = websocket.request.path.split("/")[-1]
     connected_clients[user_id] = websocket
     logger.info(f"User {user_id} connected.")
 
