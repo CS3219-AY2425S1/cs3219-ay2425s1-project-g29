@@ -12,6 +12,7 @@ jobs:
     steps:
       - name: Configure SSH Key
         run: |
+          mkdir -p ~/.ssh
           echo "${{ secrets.GCP_SSH }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H "peerprep.store" >> ~/.ssh/known_hosts
