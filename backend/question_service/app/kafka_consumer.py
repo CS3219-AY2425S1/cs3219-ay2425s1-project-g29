@@ -108,6 +108,8 @@ def process_match_result(match_result):
             "actual_difficulty": matching_question["difficulty"],
         }
     )
+    if difficulty != matching_question["difficulty"]:
+        enhanced_result["status"] = "partial match"
 
     return enhanced_result
 
