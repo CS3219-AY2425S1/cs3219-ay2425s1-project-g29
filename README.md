@@ -22,7 +22,7 @@ A technical interview preparation platform and peer matching system, where stude
 - fast
 - easy to test
 
-### Kafka + Celery
+### Kafka
 - For asynchronous events
 - Matching and Queueing
 - reliable
