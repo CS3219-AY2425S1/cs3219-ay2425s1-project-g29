@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, defineExpose } from 'vue';
 import Toaster from '@/components/ui/toast/Toaster.vue';
 import { io } from "socket.io-client";
 import axios from 'axios';
+import { useCollaborationStore } from '~/stores/collaborationStore';
 
 // Define the Message interface
 interface Message {
@@ -15,6 +16,7 @@ interface Message {
 
 const user = useCurrentUser();
 const runtimeConfig = useRuntimeConfig();
+const collaborationStore = useCollaborationStore();
 
 // Connect to Socket.IO server
 const socket = io(runtimeConfig.public.chatService); // Server address
@@ -48,7 +50,7 @@ const sendStopMessage = () => {
       message: "user has exited collaboration", 
       username: user?.value?.email 
     });
-    collaborationActive.value = false; // Optionally disable immediately
+    collaborationActive.value = false; // Disable send box immediately
   }
 };
 
@@ -125,11 +127,20 @@ const loadActiveConversation = async () => {
       selectedConversation.value = activeConversation.sessionName;
       loadHistory(activeConversation.sessionName);
     } else {
-      console.error('No active conversation found.');
+      console.warn('No active conversation found.');
+      handleInactiveSession();
     }
   } catch (error) {
     console.error('Error loading active conversation:', error);
+    handleInactiveSession();
   }
+};
+
+// Function to handle inactive session scenarios
+const handleInactiveSession = () => {
+  collaborationActive.value = false;
+  // Optionally, you can clear the collaboration info from the store
+  // collaborationStore.clearCollaborationInfo();
 };
 
 // Function to load chat history
@@ -141,8 +152,15 @@ const loadHistory = async (conversation: string) => {
 
     // Sort messages by timestamp after loading history
     messages.value.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+    // Check if any message indicates termination
+    const terminationMessage = messages.value.find(msg => msg.message === "user has exited collaboration");
+    if (terminationMessage) {
+      collaborationActive.value = false;
+    }
   } catch (error) {
     console.error('Error loading history:', error);
+    handleInactiveSession();
   }
 };
 
@@ -207,7 +225,7 @@ defineExpose({
   </div>
   <Toaster />
   <div v-if="!collaborationActive" class="notification">
-    Collaboration has been terminated.
+    Session ended. Click "Terminate Collaboration" to return to the main page.
   </div>
 </template>
 
