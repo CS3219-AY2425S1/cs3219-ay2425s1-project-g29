@@ -1,0 +1,54 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "start": "nuxt start",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@codemirror/collab": "^6.1.1",
+    "@codemirror/lang-cpp": "^6.0.2",
+    "@codemirror/lang-javascript": "^6.2.2",
+    "@codemirror/lang-python": "^6.1.6",
+    "@codemirror/theme-one-dark": "^6.1.2",
+    "@liveblocks/client": "^2.10.0",
+    "@liveblocks/yjs": "^2.10.0",
+    "@pinia/nuxt": "^0.5.5",
+    "@tanstack/vue-table": "^8.20.5",
+    "@vee-validate/zod": "^4.13.2",
+    "@vueuse/core": "^11.0.3",
+    "axios": "^1.7.7",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "codemirror": "^6.0.1",
+    "lucide-vue-next": "^0.441.0",
+    "nuxt": "^3.13.0",
+    "nuxt-vuefire": "^1.0.4",
+    "pinia": "^2.2.4",
+    "radix-vue": "^1.9.5",
+    "shadcn-nuxt": "^0.10.4",
+    "socket.io-client": "^4.8.1",
+    "tailwind-merge": "^2.5.2",
+    "tailwindcss-animate": "^1.0.7",
+    "vee-validate": "^4.13.2",
+    "vue": "latest",
+    "vue-router": "latest",
+    "y-codemirror.next": "^0.3.5",
+    "yjs": "^13.6.20",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.12.1",
+    "firebase": "^9.23.0",
+    "nuxt-chatgpt": "^0.2.5",
+    "typescript": "^5.6.2"
+  },
+  "overrides": {
+    "vue": "latest"
+  }
+}

@@ -1,0 +1,59 @@
+# .github/workflows/pytest.yaml
+name: Python Unit Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_run:
+    workflows: ["Docker Compose Build and Test"]  # Name of your docker-compose workflow
+    types:
+      - completed
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r backend/question_service/requirements.txt
+        pip install -r backend/matching_service/requirements.txt
+
+    - name: Set up environment variables for backend services (question-service, user-service)
+      run: |
+        echo "CRED_PATH=./firebase-cred.json" > backend/question_service/.env
+        echo "CRED_PATH=./firebase-cred.json" > backend/user_service/.env
+
+    # Add firebase-cred.json file to backend services
+    - name: Add Firebase credentials
+      run: |
+        echo "${{ secrets.FIREBASE_CRED_JSON_BASE64 }}" | base64 -d > backend/question_service/firebase-cred.json
+        echo "${{ secrets.FIREBASE_CRED_JSON_BASE64 }}" | base64 -d > backend/user_service/firebase-cred.json
+        echo "${{ secrets.FIREBASE_CRED_JSON_BASE64 }}" | base64 -d > firebase-cred.json
+
+    - name: Run tests with pytest
+      run: |
+        pytest backend/question_service/tests/ -v --cov=app --cov-report=xml:backend/question_service/coverage.xml
+        pytest backend/matching_service -v --cov=app --cov-report=xml:backend/matching_service/coverage.xml
+
+    - name: Upload test results
+      if: always()  # Upload test results even if tests fail
+      uses: actions/upload-artifact@v3
+      with:
+        name: pytest-results
+        path: |
+          ./backend/question_service/coverage.xml
+          ./backend/question_service/.coverage
+          ./backend/matching_service/coverage.xml
+          ./backend/mathcing_service/.coverage
