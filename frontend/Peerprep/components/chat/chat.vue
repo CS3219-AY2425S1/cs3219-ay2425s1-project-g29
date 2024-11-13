@@ -1,9 +1,8 @@
-<script setup lang="ts">
+""<script setup lang="ts">
 import { ref, onMounted, onUnmounted, defineExpose } from 'vue';
 import Toaster from '@/components/ui/toast/Toaster.vue';
 import { io } from "socket.io-client";
 import axios from 'axios';
-import { useCollaborationStore } from '~/stores/collaborationStore';
 
 // Define the Message interface
 interface Message {
@@ -16,7 +15,6 @@ interface Message {
 
 const user = useCurrentUser();
 const runtimeConfig = useRuntimeConfig();
-const collaborationStore = useCollaborationStore();
 
 // Connect to Socket.IO server
 const socket = io(runtimeConfig.public.chatService); // Server address
@@ -50,7 +48,7 @@ const sendStopMessage = () => {
       message: "user has exited collaboration", 
       username: user?.value?.email 
     });
-    collaborationActive.value = false; // Disable send box immediately
+    collaborationActive.value = false; // Optionally disable immediately
   }
 };
 
@@ -119,29 +117,27 @@ const formatTimestamp = (timestamp: string | number | Date) => {
 };
 
 // Function to load the active conversation
+// Function to load the active conversation
 const loadActiveConversation = async () => {
   try {
     const response = await axios.get(`${runtimeConfig.public.chatService}/api/conversations/${user?.value?.uid}`);
     const activeConversation = response.data.conversations.find((conv: any) => conv.flag === 'active');
+    
     if (activeConversation) {
+      // Set the active conversation and load history if found
       selectedConversation.value = activeConversation.sessionName;
       loadHistory(activeConversation.sessionName);
+      collaborationActive.value = true; // Enable collaboration mode
     } else {
-      console.warn('No active conversation found.');
-      handleInactiveSession();
+      // No active conversation found
+      collaborationActive.value = false; // Disable the send button
+      console.error("Collaboration has been terminated. Please click Terminate session to go to the main page.");
     }
   } catch (error) {
     console.error('Error loading active conversation:', error);
-    handleInactiveSession();
   }
 };
 
-// Function to handle inactive session scenarios
-const handleInactiveSession = () => {
-  collaborationActive.value = false;
-  // Optionally, you can clear the collaboration info from the store
-  // collaborationStore.clearCollaborationInfo();
-};
 
 // Function to load chat history
 const loadHistory = async (conversation: string) => {
@@ -152,15 +148,8 @@ const loadHistory = async (conversation: string) => {
 
     // Sort messages by timestamp after loading history
     messages.value.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-
-    // Check if any message indicates termination
-    const terminationMessage = messages.value.find(msg => msg.message === "user has exited collaboration");
-    if (terminationMessage) {
-      collaborationActive.value = false;
-    }
   } catch (error) {
     console.error('Error loading history:', error);
-    handleInactiveSession();
   }
 };
 
@@ -225,7 +214,7 @@ defineExpose({
   </div>
   <Toaster />
   <div v-if="!collaborationActive" class="notification">
-    Session ended. Click "Terminate Collaboration" to return to the main page.
+    Collaboration has been terminated.
   </div>
 </template>
 
@@ -315,4 +304,4 @@ defineExpose({
   border-radius: 4px;
   text-align: center;
 }
-</style>
+</style>""
