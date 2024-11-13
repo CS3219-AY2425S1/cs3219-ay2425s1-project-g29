@@ -145,9 +145,7 @@ onMounted(getInfo);
       <p><strong>Difficulty:</strong> {{ capitalizeFirstLetter(questionInfo?.difficulty) }}</p>
 
       <h3 class="text-xl font-semibold mt-6 mb-2">Your Attempt:</h3>
-      <pre class="bg-gray-100 p-4 rounded-md overflow-auto">
-        {{ codeAttempt || 'No code available' }}
-      </pre>
+      <pre class="bg-gray-100 p-4 rounded-md overflow-auto">{{ codeAttempt || 'No code available' }}</pre>
 
       <p class="mt-4"><strong>Matched on:</strong> {{ attemptTimestamp }}</p>
       <p><strong>Matched User:</strong> {{ matchedUserDisplayName || 'N/A' }}</p>
