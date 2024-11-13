@@ -25,6 +25,6 @@ jobs:
             git stash
             git pull origin main
             git stash pop
-            docker compose build --no-cache && docker compose up -d
+            docker compose up --build -d
             echo "Deployment completed successfully on the VM"
           EOF
